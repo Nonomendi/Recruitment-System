@@ -1,50 +1,62 @@
 package com.example.backend.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.example.backend.model.Post;
 import com.example.backend.repository.PostRepository;
-import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
+import java.sql.Date;
 
 @Service
 public class PostService {
-    private final PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
+    @Autowired
+    private PostRepository postRepository;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
-    public Optional<Post> getPostById(Long id) {
-        return postRepository.findById(id);
+    public void createPost(Post post) {
+        postRepository.save(post);
     }
 
-    public List<Post> getPostsByUserId(Long userId) {
-        return postRepository.findByUserId(userId);
+    public List<Post> getClosedPosts(Date currentDate) {
+        return postRepository.findByClosingDateLessThan(currentDate);
     }
 
-    public Post createPost(Post post) {
-        return postRepository.save(post);
+    public int calculateCandidateScore(Post post, com.example.backend.model.Candidate candidate) {
+        int score = 0;
+
+        if (post.getDriversLicenseRequired().equalsIgnoreCase(candidate.getDriversLicense())) {
+            score += 2;
+        }
+
+        if (isQualificationMet(post.getQualificationRequirements(), candidate.getQualification())) {
+            score += 2;
+        }
+
+        if (isExperienceMet(post.getExperienceYears(), candidate.getExperienceYears())) {
+            score += 2;
+        }
+
+        return score;
     }
 
-    public Post updatePost(Long id, Post updatedPost) {
-        return postRepository.findById(id)
-                .map(post -> {
-                    post.setTitle(updatedPost.getTitle());
-                    post.setContent(updatedPost.getContent());
-                    return postRepository.save(post);
-                }).orElseThrow(() -> new RuntimeException("Post not found"));
+    private boolean isQualificationMet(String required, String candidate) {
+        //I need to  Implement qualification comparison logic here
+        
+        return candidate.equalsIgnoreCase(required);
     }
 
-    public void deletePost(Long id) {
-        postRepository.deleteById(id);
-    }
-
-    public List<Post> searchByTitle(String title) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'searchByTitle'");
+    private boolean isExperienceMet(String required, int candidate) {
+        //I need  to  Implement experience comparison logic here
+     
+        try{
+            int requiredYears = Integer.parseInt(required.replaceAll("[^0-9]",""));
+            return candidate >= requiredYears;
+        }catch(NumberFormatException e){
+            return false;
+        }
     }
 }

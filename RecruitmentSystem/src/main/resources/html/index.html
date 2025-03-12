@@ -3,27 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body onload="Recruitment_System()">
-<header class="hero">
-    <div class="hero-content">
-        <h1>e-Recruitment Admin Portal!</h1>
+    <title>PSIRA Recruitment System </title>
+    <style>
+        /* CSS styles for layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
 
-        <p>Welcoe to PSIRA e-recruitment Administrator.<p/>
-        <button onclick="location.href='add_product.html'" class="cta-btn">Start Shopping</button>
+        .header {
+            background-color: #ba7844;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .ad-banner {
+            background-color: #222;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #d6a688;
+        }
+
+        ol {
+            margin-left: 20px;
+        }
+
+        ol li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #d6a688;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Styling */
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #87623c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #87623c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PSIRA Recruitment System</h1>
     </div>
-</header>
-<section>
-    <form>
-        <a href="add_product.html"><img src="./img/add.png" alt="add" id="add" class="icons"></a>
-        <img id="delete" src="img/delete.png" alt="delete" onclick="deleteProducts()" class="icons"/>
-        <a href="./login.html"><img src="img/login.png" alt="login" id="login" class="icons"/></a>
-        <a href="./basket.html"><img src="img/cart.png" alt="basket" id="basket" class="icons"/></a>
-        <div id="results"></div>
-    </form>
-</section>
+
+    <div class="ad-banner">
+        <h2>CareerConnect</h2>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <h2>Applicant Portal</h2>
+            <ol>
+                <li>The system should be able to allow applicants to register and login.
+                    <ul>
+                        <li><a href="#" onclick="showLogin()">Login</a></li>
+                        <li><a href="#" onclick="showRegister()">Register</a></li>
+                    </ul>
+                </li>
+                <li>To apply for a position, click the link "Click here to apply" next to the position you are applying for. 
+                    <a href="#" onclick="showLogin()">Click here to apply</a>
+                </li>
+            </ol>
+            <img src="path/to/your/image.jpg" alt="Applicant Portal"> 
+        </div>
+
+        <div id="loginScreen" style="display: none;">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required><br>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required><br>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <div id="registerScreen" style="display: none;">
+            <h2>Register New User</h2>
+            <form id="registerForm">
+                <label for="registerUsername">Username:</label>
+                <input type="text" id="registerUsername" required><br>
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" required><br>
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" required><br>
+                <label for="registerRole">Role:</label>
+                <select id="registerRole">
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                </select><br>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('registerScreen').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('registerScreen').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'none';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    alert("Login successful!");
+                    localStorage.setItem('jwtToken', data.token);  
+                } else {
+                    alert("Login failed.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+
+            fetch("http://localhost:8080/api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, email, password, role })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Registration successful!");
+                showLogin();  
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
 </body>
-<script src="js/script.js"></script>
 </html>

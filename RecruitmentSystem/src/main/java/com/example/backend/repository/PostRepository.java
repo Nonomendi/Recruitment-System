@@ -1,11 +1,13 @@
 package com.example.backend.repository;
 
-import com.example.backend.model.Post;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.sql.Date;
 import java.util.List;
 
-@Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.backend.model.Post;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByUserId(Long userId); // Get all posts by a specific user
+
+    List<Post> findByClosingDateLessThan(Date currentDate);
 }
